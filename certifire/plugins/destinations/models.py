@@ -5,7 +5,7 @@ import paramiko
 from certifire import database, db, users
 from paramiko.ssh_exception import (AuthenticationException,
                                     NoValidConnectionsError)
-from sqlalchemy import Column, ForeignKey, Integer, String, Text
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
 
 
@@ -23,13 +23,14 @@ class Destination(db.Model):
     challengeDestinationPath = Column(Text())
     certDestinationPath = Column(Text())
     exportFormat = Column(Text())
+    no_check = Column(Boolean())
 
     user_id = Column(Integer, ForeignKey("users.id"))
     order_destination = relationship("Order", foreign_keys="Order.destination_id")
 
     def __init__(self, user_id, host, port=None, user=None, password=None,
                  ssh_priv_key=None, ssh_priv_key_pass=None, challengeDestinationPath=None,
-                 certDestinationPath=None, exportFormat=None):
+                 certDestinationPath=None, exportFormat=None, no_check=False):
         self.user_id = user_id
         self.host = host
         self.port = port if port else 22
@@ -40,6 +41,7 @@ class Destination(db.Model):
         self.challengeDestinationPath = challengeDestinationPath if challengeDestinationPath else '/var/www/html'
         self.certDestinationPath = certDestinationPath if certDestinationPath else '/etc/nginx/certs'
         self.exportFormat = exportFormat if exportFormat else 'NGINX'
+        self.no_check = no_check
 
     def __repr__(self):
         return "Destination(label={label})".format(label=self.id)
@@ -67,16 +69,20 @@ class Destination(db.Model):
         }, indent=4)
 
     def create(self):
-        try:
-            self.open_sftp_connection()
+        if self.no_check:
             database.create(self)
             return True
-        except:
-            return False
+        else:
+            try:
+                self.open_sftp_connection()
+                database.create(self)
+                return True
+            except:
+                return False
 
     def update(self, user_id=None, host=None, port=None, user=None, password=None,
                ssh_priv_key=None, ssh_priv_key_pass=None, challengeDestinationPath=None,
-               certDestinationPath=None, exportFormat=None):
+               certDestinationPath=None, exportFormat=None, no_check=False):
         self.user_id = user_id if user_id else self.user_id
         self.host = host if host else self.host
         self.port = port if port else self.port
@@ -87,12 +93,18 @@ class Destination(db.Model):
         self.challengeDestinationPath = challengeDestinationPath if challengeDestinationPath else self.challengeDestinationPath
         self.certDestinationPath = certDestinationPath if certDestinationPath else self.certDestinationPath
         self.exportFormat = exportFormat if exportFormat else self.exportFormat
-        try:
-            self.open_sftp_connection()
+        self.no_check = no_check
+
+        if self.no_check:
             database.update(self)
             return True
-        except:
-            return False
+        else:
+            try:
+                self.open_sftp_connection()
+                database.update(self)
+                return True
+            except:
+                return False
 
     def delete(self):
         database.delete(self)
