@@ -169,7 +169,8 @@ def _create_dest(args):
                     ssh_priv_key_pass=args.pkeypass,
                     challengeDestinationPath=args.challengePath,
                     certDestinationPath=args.certPath,
-                    exportFormat=args.exportFormat)
+                    exportFormat=args.exportFormat,
+                    no_check=args.nocheck)
         if dest.create():
             print("Destination: {} created".format(dest.id))
             print(dest.json)
@@ -200,7 +201,8 @@ def _update_dest(args):
                     ssh_priv_key_pass=args.pkeypass,
                     challengeDestinationPath=args.challengePath,
                     certDestinationPath=args.certPath,
-                    exportFormat=args.exportFormat):
+                    exportFormat=args.exportFormat,
+                    no_check=args.nocheck):
 
             print("Destination: {} updated".format(dest.id))
             print(dest.json)
@@ -331,8 +333,9 @@ def certifire_main():
     create_dest.add_argument('--challengePath', help="HTTP-01 Challenge destination path", default='/var/www/html')
     create_dest.add_argument('--certPath', help="Certificate push destination path", default='/etc/nginx/certs')
     create_dest.add_argument('--exportFormat', help="Certificate export format", choices=('NGINX', 'Apache'),default='NGINX')
+    create_dest.add_argument('--nocheck', help="Pass this flag to skip SSH initial checks", dest='nocheck', action='store_true')
     
-    create_dest.set_defaults(func=_create_dest)
+    create_dest.set_defaults(func=_create_dest, nocheck=False)
 
     update_dest = destination_subparsers.add_parser(
         'update',
@@ -350,8 +353,9 @@ def certifire_main():
     update_dest.add_argument('--challengePath', help="HTTP-01 Challenge destination path")
     update_dest.add_argument('--certPath', help="Certificate push destination path")
     update_dest.add_argument('--exportFormat', help="Certificate export format", choices=('NGINX', 'Apache'))
+    update_dest.add_argument('--nocheck', help="Pass this flag to skip SSH initial checks", dest='nocheck', action='store_true')
     
-    update_dest.set_defaults(func=_update_dest)
+    update_dest.set_defaults(func=_update_dest, nocheck=False)
 
     delete_dest = destination_subparsers.add_parser(
         'delete',
