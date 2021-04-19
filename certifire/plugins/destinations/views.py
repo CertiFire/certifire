@@ -160,4 +160,4 @@ def delete_destination(id):
         dest.delete()
         return (jsonify({'status': 'Destination deleted'}), 200)
     except:
-        return (jsonify({'status': 'Failed  to delete'}), 400)
+        return (jsonify({'status': 'Failed to delete'}), 400)
