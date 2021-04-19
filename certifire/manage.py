@@ -7,6 +7,7 @@ from flask_script import Manager
 from certifire import app, database, db, users
 from certifire.plugins.acme import views
 from certifire.plugins.destinations import views
+from certifire.plugins.monitoring import views
 
 manager = Manager(app)
 migrate = Migrate(app, db)
