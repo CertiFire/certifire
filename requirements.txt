@@ -9,6 +9,7 @@ Flask-Migrate
 Flask-Script
 Flask-SQLAlchemy
 inflection
+influxdb-client
 itsdangerous
 Jinja2
 josepy
