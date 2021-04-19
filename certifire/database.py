@@ -139,6 +139,9 @@ def get_all(model, value, field="id"):
     query = session_query(model)
     return query.filter(get_model_column(model, field) == value)
 
+def select_all(model):
+    return model.query.all()
+
 
 def create(model):
     """
