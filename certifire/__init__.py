@@ -1,4 +1,3 @@
-from dotenv import load_dotenv
 from flask import Flask, jsonify
 from flask_httpauth import HTTPBasicAuth
 from flask_migrate import Migrate, MigrateCommand
@@ -40,7 +39,6 @@ def create_app(config_name):
 
     return app
 
-load_dotenv()
 db = SQLAlchemy()
 auth = HTTPBasicAuth()
 app = create_app('development')
