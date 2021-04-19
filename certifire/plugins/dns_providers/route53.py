@@ -51,6 +51,14 @@ class Route53Dns(common.BaseDns):
         challenge_domain = "_acme-challenge" + "." + domain_name + "."
         return self._change_txt_record("DELETE", challenge_domain, domain_dns_value)
 
+    def create_a_record(self, domain_name, domain_dns_value):
+        print("Creating DNS A record: {} for domain: {}".format(domain_dns_value, domain_name))
+        return self._change_a_record("UPSERT", domain_name, domain_dns_value)
+
+    def delete_a_record(self, domain_name, domain_dns_value):
+        print("Deleting DNS A record: {} for domain: {}".format(domain_dns_value, domain_name))
+        return self._change_a_record("DELETE", domain_name, domain_dns_value)
+
     def _find_zone_id_for_domain(self, domain):
         """Find the zone id responsible a given FQDN.
            That is, the id for the zone whose name is the longest parent of the
@@ -107,6 +115,30 @@ class Route53Dns(common.BaseDns):
                             "Type": "TXT",
                             "TTL": self.ttl,
                             "ResourceRecords": rrecords,
+                        },
+                    }
+                ],
+            },
+        )
+        return response["ChangeInfo"]["Id"]
+
+    def _change_a_record(self, action, domain_name, domain_dns_value):
+        zone_id = self._find_zone_id_for_domain(domain_name)
+
+        rrecords = {"Value": "{0}".format(domain_dns_value)}
+
+        response = self.r53.change_resource_record_sets(
+            HostedZoneId=zone_id,
+            ChangeBatch={
+                "Comment": "certifire auto add A record " + action,
+                "Changes": [
+                    {
+                        "Action": action,
+                        "ResourceRecordSet": {
+                            "Name": domain_name,
+                            "Type": "A",
+                            "TTL": self.ttl,
+                            "ResourceRecords": [rrecords],
                         },
                     }
                 ],
