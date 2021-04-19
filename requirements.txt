@@ -15,6 +15,7 @@ josepy
 MarkupSafe
 paramiko
 psycopg2-binary
+python-dotenv
 PyJWT
 pylint-flask
 pylint-flask-sqlalchemy
