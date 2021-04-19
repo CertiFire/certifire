@@ -75,7 +75,7 @@ IDENTRUST_CROSS_SIGNED_LE_ICA = None
 VALID_DNS_PROVIDERS = ['route53']
 MON_BASE_URL = "mon.certifire.xyz"
 
-INFLUX_TOKEN="rkgW-shtW9fCIGQ8tNVm9_KLuSRczrHrRGWGn22z-LDOAm41xqhWeozctedd63sW6qASMY4WhenD0eO2iwqxfA=="
-INFLUX_ORG="certifire"
-INFLUX_BUCKET="Monitoring"
-INFLUX_URL="https://influx.certifire.xyz"
+INFLUX_TOKEN = "rkgW-shtW9fCIGQ8tNVm9_KLuSRczrHrRGWGn22z-LDOAm41xqhWeozctedd63sW6qASMY4WhenD0eO2iwqxfA=="
+INFLUX_ORG = "certifire"
+INFLUX_BUCKET = "certifire"
+INFLUX_URL = "https://influx.certifire.xyz"

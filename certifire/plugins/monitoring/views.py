@@ -1,8 +1,13 @@
 import json
 
-from certifire import app, auth, database
+from certifire import app, auth
+from certifire import config as config
+from certifire import database
 from certifire.plugins.monitoring.models import Target, Worker
 from flask import abort, g, jsonify, request, url_for
+from influxdb_client import InfluxDBClient, Point, WritePrecision
+from influxdb_client.client.write_api import SYNCHRONOUS
+
 
 @app.route('/api/target', methods=['POST'])
 @auth.login_required
@@ -129,12 +134,19 @@ def get_all_workers():
         data[worker.id] = json.loads(worker.json)
     return jsonify(data)
 
-@app.route('/api/worker/<int:id>', methods=['POST'])
+@app.route('/api/monitoring', methods=['POST'])
 @auth.login_required
-def post_mon_worker_data(id):
-    W = Worker.query.get(id)
-    if not W:
-        abort(400)
-    post_data = request.get_json(force=True)
-    print(post_data)
-    return jsonify(W.json)
+def post_mon_worker_data():
+    try:
+        post_data = request.get_json(force=True)
+
+        client = InfluxDBClient(url=config.INFLUX_URL, token=config.INFLUX_TOKEN)
+        write_api = client.write_api(write_options=SYNCHRONOUS)
+
+        try:
+            write_api.write(config.INFLUX_BUCKET, config.INFLUX_ORG, post_data['data'])
+            return (jsonify({'status': 'Data Inserted'}), 201)
+        except:
+            return (jsonify({'status': 'TSDB Error'}), 401)
+    except:
+        return (jsonify({'status': 'Internal Error'}), 400)
