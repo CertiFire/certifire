@@ -76,7 +76,7 @@ class Worker(db.Model):
         self.bw_url = bw_url
         self.mon_url = mon_url
 
-    def create(self, create_host=False):
+    def create(self, create_host=False, mon_bw=False):
         try:
             database.create(self)
             
@@ -86,6 +86,9 @@ class Worker(db.Model):
                 r53.create_a_record(host, self.ip)
                 self.host = host
                 database.update(self)
+            
+            if not self.bw_url and mon_bw:
+                self.bw_url = "http://" + self.host + ":8000/bwmon/10M"
             
             if self.mon_self:
                 T = Target(self.ip, self.host, self.mon_url, self.bw_url)

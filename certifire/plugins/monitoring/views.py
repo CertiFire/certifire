@@ -79,6 +79,7 @@ def new_mon_worker():
     location = post_data.get('location')
     mon_self = post_data.get('mon_self', False)
     create_host = post_data.get('create_host', False)
+    mon_bw = post_data.get('mon_bw', False)
     mon_url = post_data.get('mon_url')
     bw_url = post_data.get('bw_url')
     if not ip and not host:
@@ -88,6 +89,7 @@ def new_mon_worker():
         location = post_data.get('location')
         mon_self = post_data.get('mon_self', False)
         create_host = post_data.get('create_host', False)
+        mon_bw = post_data.get('mon_bw', False)
         mon_url = post_data.get('mon_url')
         bw_url = post_data.get('bw_url')
     
@@ -98,7 +100,7 @@ def new_mon_worker():
         return (jsonify({'status': 'location field missing'}), 400)
     
     W = Worker(ip, host, location, mon_self, mon_url, bw_url)
-    ret = W.create(create_host)
+    ret = W.create(create_host, mon_bw)
     
     if ret:
         status = json.loads(W.json)
