@@ -16,16 +16,18 @@ def new_mon_target():
     ip = post_data.get('ip')
     host = post_data.get('host')
     url = post_data.get('url')
+    bw_url = post_data.get('bw_url')
     if not ip and not host:
         post_data = request.get_json(force=True)
         ip = post_data.get('ip')
         host = post_data.get('host')
         url = post_data.get('url')
+        bw_url = post_data.get('bw_url')
     
     if not ip and not host:
         return (jsonify({'status': 'host or ip fields missing'}), 400)
     
-    T = Target(ip, host, url)
+    T = Target(ip, host, url, bw_url)
     ret, tid = T.create()
     
     if ret:
@@ -77,6 +79,8 @@ def new_mon_worker():
     location = post_data.get('location')
     mon_self = post_data.get('mon_self', False)
     create_host = post_data.get('create_host', False)
+    mon_url = post_data.get('mon_url')
+    bw_url = post_data.get('bw_url')
     if not ip and not host:
         post_data = request.get_json(force=True)
         ip = post_data.get('ip')
@@ -84,6 +88,8 @@ def new_mon_worker():
         location = post_data.get('location')
         mon_self = post_data.get('mon_self', False)
         create_host = post_data.get('create_host', False)
+        mon_url = post_data.get('mon_url')
+        bw_url = post_data.get('bw_url')
     
     if not ip and not host:
         return (jsonify({'status': 'host or ip fields missing'}), 400)
@@ -91,7 +97,7 @@ def new_mon_worker():
     if not location:
         return (jsonify({'status': 'location field missing'}), 400)
     
-    W = Worker(ip, host, location, mon_self)
+    W = Worker(ip, host, location, mon_self, mon_url, bw_url)
     ret = W.create(create_host)
     
     if ret:
